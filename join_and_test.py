@@ -8,11 +8,31 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest
 from telethon.errors import MessageIdInvalidError
 from telethon.tl.types import Updates, UpdateNewMessage, UpdateNewChannelMessage
+from flask import Flask
+from threading import Thread
+
+# بقیه ایمپورت‌های خودت مثل telethon و asyncio و ...
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "✅ Bot is running."
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# 🧠 اینو قبل از اجرای اصلی برنامه صدا بزن:
+keep_alive()
 
 # تنظیمات اصلی
-api_id = 29014935  # API ID شما
-api_hash = '4fd0256687178b8988295a00aec42f5d'  # API Hash شما
-phone_number = '+989023996712'
+api_id = 20436760  # API ID شما
+api_hash = 'cd869dd9d53ab81d721fc705a126d730'  # API Hash شما
+phone_number = '+447377168799'
 SESSION_FILE = 'session.txt'
 LINKS_FILE = 'links.txt'
 UNABLE_FILE = 'unable.txt'
@@ -25,11 +45,14 @@ async def init_client():
         try:
             with open(SESSION_FILE, 'r') as f:
                 session_str = f.read().strip()
-            client = TelegramClient(StringSession(session_str), api_id, api_hash)
+            client = TelegramClient(StringSession(session_str), api_id,
+                                    api_hash)
             await client.connect()
             print("✅ اتصال با استفاده از session موجود برقرار شد.")
         except Exception as e:
-            print(f"⚠️ خطا در بارگذاری session: {e} | تلاش برای ایجاد session جدید...")
+            print(
+                f"⚠️ خطا در بارگذاری session: {e} | تلاش برای ایجاد session جدید..."
+            )
             client = TelegramClient(StringSession(), api_id, api_hash)
             await client.start(phone_number)
             session_str = client.session.save()
@@ -82,7 +105,9 @@ async def join_and_test(client, link):
                 real_msg = None
                 if isinstance(result, Updates):
                     for update in result.updates:
-                        if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)):
+                        if isinstance(
+                                update,
+                            (UpdateNewMessage, UpdateNewChannelMessage)):
                             real_msg = update.message
                             break
                 else:
@@ -135,7 +160,7 @@ async def join_and_test(client, link):
 async def main():
     client = await init_client()
 
-    with open('/home/am1rosen/telegram_automation/links.txt', 'r') as f:
+    with open('links.txt', 'r') as f:
         links = [line.strip() for line in f if line.strip()]
 
     index = 0
@@ -154,7 +179,9 @@ async def main():
             except:
                 break
         if not success:
-            print("⏳ سه تلاش انجام شد ولی هیچ‌کدام موفق نبود. ۲ دقیقه صبر می‌کنیم...")
+            print(
+                "⏳ سه تلاش انجام شد ولی هیچ‌کدام موفق نبود. ۲ دقیقه صبر می‌کنیم..."
+            )
             await asyncio.sleep(120)
 
     await client.disconnect()
