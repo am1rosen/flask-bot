@@ -156,6 +156,10 @@ async def join_and_test(client, link):
             print(f"🔄 تلاش مجدد در {WAIT_TIME} ثانیه دیگر...")
             await asyncio.sleep(WAIT_TIME)
 
+async def get_total_dialogs_count(client):
+    dialogs = await client.get_dialogs()
+    count = sum(1 for dialog in dialogs if getattr(dialog.entity, 'megagroup', False) or getattr(dialog.entity, 'broadcast', False))
+    return count
 
 async def main():
     client = await init_client()
@@ -165,6 +169,14 @@ async def main():
 
     index = 0
     while index < len(links):
+        total = await get_total_dialogs_count(client)
+        if total >= 475:
+            print(f"🚫 به حداکثر تعداد عضویت (475) رسیدیم. در حالت انتظار قرار می‌گیریم...")
+            while total >= 475:
+                print("⏳ در حال بررسی هر ۳ دقیقه برای ادامه...")
+                await asyncio.sleep(180)  # 3 دقیقه صبر
+                total = await get_total_dialogs_count(client)
+            print("✅ ظرفیت آزاد شد، ادامه می‌دهیم...")
         success = False
         for attempt in range(3):
             if index >= len(links):
@@ -174,7 +186,7 @@ async def main():
                 await join_and_test(client, link)
                 success = True
                 index += 1  # برو به لینک بعدی و تلاش کن
-                await asyncio.sleep(1800)
+                await asyncio.sleep(1200)
                 break  # از حلقه بیرون برو چون موفق شدیم
             except:
                 break
