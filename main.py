@@ -73,6 +73,15 @@ async def init_client():
 
     return client
 
+def remove_link_from_file(file_path, target_link):
+    if not os.path.exists(file_path):
+        return
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+    with open(file_path, 'w') as f:
+        for line in lines:
+            if line.strip() != target_link.strip():
+                f.write(line)
 
 async def join_and_test(client, link):
     attempt = 0  # شمارش تعداد تلاش‌ها
@@ -88,6 +97,8 @@ async def join_and_test(client, link):
                     print("✅ با موفقیت به گروه/کانال با لینک دعوت پیوستیم.")
                 except Exception as e:
                     print(f"❌ خطا در جوین شدن با لینک دعوت: {e}")
+                    if "has expired" in str(e):
+                        remove_link_from_file(LINKS_FILE, link)
                     with open("unable_to_join.txt", 'a') as f:
                         f.write(link + '\n')
                     break
