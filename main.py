@@ -30,9 +30,9 @@ def keep_alive():
 keep_alive()
 
 # تنظیمات اصلی
-api_id = 20436760  # API ID شما
-api_hash = 'cd869dd9d53ab81d721fc705a126d730'  # API Hash شما
-phone_number = '+447377168799'
+api_id = 27950812  # API ID شما
+api_hash = '144c28cddc91020362d77a3197f454ce'  # API Hash شما
+phone_number = '+989920189121'
 SESSION_FILE = 'session.txt'
 LINKS_FILE = 'links.txt'
 UNABLE_FILE = 'unable.txt'
